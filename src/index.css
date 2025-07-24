@@ -13,3 +13,11 @@ body {
   display: none; /* Chrome, Safari, Opera */
 }
 
+/* App.css or tailwind.css */
+.noScroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.noScroll::-webkit-scrollbar {
+  display: none;
+}

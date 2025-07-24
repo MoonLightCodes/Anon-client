@@ -21,6 +21,7 @@ const IndiChats = () => {
   } = useGlobalContext();
 
   const bottomRef = useRef();
+  const inputRef = useRef();
   const [msg, setMsg] = useState("");
 
   const chatData = useMemo(
@@ -80,6 +81,9 @@ const IndiChats = () => {
 
     socket.emit("send_message", messageData);
     setMsg("");
+
+    // Optional: auto focus input after sending
+    inputRef.current?.focus();
   };
 
   return (
@@ -123,29 +127,30 @@ const IndiChats = () => {
       </div>
 
       {/* Input Area */}
-      <div className="mt-4 flex gap-2 items-center">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSend();
+        }}
+        className="mt-4 flex gap-2 items-center sticky bottom-0 bg-[#121c26] pt-4"
+      >
         <input
+          ref={inputRef}
           type="text"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleSend();
-            }
-          }}
           placeholder="Type a message..."
           className="flex-1 bg-[#1f2a37] text-white p-3 rounded-lg border border-[#2b3b4e] outline-none"
           inputMode="text"
           autoComplete="off"
         />
         <button
-          onClick={handleSend}
-          className="bg-green-500 hover:bg-green-600 cursor-pointer px-4 py-2 rounded-lg text-white font-semibold"
+          type="submit"
+          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-white font-semibold"
         >
           Send
         </button>
-      </div>
+      </form>
     </div>
   );
 };
