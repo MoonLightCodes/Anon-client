@@ -56,8 +56,8 @@ const IndiChats = () => {
         // Refetch chats and update state
         const res = await getChats();
         dispatch({
-          type: "z",
-          value: phrase,
+          type: "POPULATE_NEW_CHATS",
+          value: res.data.data.activeChats,
         });
       }
     };
