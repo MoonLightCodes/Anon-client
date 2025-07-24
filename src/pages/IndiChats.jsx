@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
 import moment from "moment";
+import { FaArrowLeft } from "react-icons/fa";
 import { useGlobalContext } from "../context/ContextProvider";
 import { getChats } from "../server/homePage";
 
@@ -9,30 +9,46 @@ const IndiChats = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const phrase = location.state?.phrase;
-  const inputRef = useRef(null);
-  const bottomRef = useRef(null);
-  const [msg, setMsg] = useState("");
 
   const {
-    socket,
-    user,
-    chats: { activeChats },
+    state,
     dispatch,
-  } = useGlobalContext().state;
+    state: {
+      socket,
+      user,
+      chats: { activeChats },
+    },
+  } = useGlobalContext();
 
-  const chatData = useMemo(() => {
-    return activeChats.find((chat) => chat.phrase === phrase);
-  }, [activeChats, phrase]);
+  const bottomRef = useRef();
+  const inputRef = useRef();
+  const [msg, setMsg] = useState("");
+
+  const chatData = useMemo(
+    () => activeChats.find((chat) => chat.phrase === phrase),
+    [activeChats, phrase]
+  );
 
   useEffect(() => {
-    if (!chatData) {
-      navigate("/");
-      return;
-    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatData?.messages]);
+
+  useEffect(() => {
+    (async () => {
+      const res = await getChats();
+      dispatch({
+        type: "POPULATE_NEW_CHATS",
+        value: res.data.data.activeChats,
+      });
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!chatData) return navigate("/");
 
     socket.emit("join_room", { roomPhrase: chatData.phrase });
 
-    const onNewMessage = async (data) => {
+    const handleNewMessage = async (data) => {
       if (data.phrase === chatData.phrase) {
         const res = await getChats();
         dispatch({
@@ -42,74 +58,67 @@ const IndiChats = () => {
       }
     };
 
-    socket.on("newMessage", onNewMessage);
+    socket.on("newMessage", handleNewMessage);
 
     return () => {
       socket.emit("leaveRoom", chatData.phrase);
-      socket.off("newMessage", onNewMessage);
+      socket.off("newMessage", handleNewMessage);
     };
   }, [chatData]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatData?.messages]);
-
-  const handleSend = (e) => {
-    e.preventDefault();
+  const handleSend = () => {
     if (!msg.trim()) return;
 
-    const newMessage = {
+    const messageData = {
       text: msg,
-      sender: { _id: user._id, username: user.username },
+      sender: {
+        _id: user._id,
+        username: user.username,
+      },
       phrase: chatData.phrase,
       createdAt: new Date(),
     };
 
-    // Emit to server
-    socket.emit("send_message", newMessage);
-
-    // 👇 Immediately update local UI
-    dispatch({
-      type: "ADD_LOCAL_MESSAGE",
-      value: { phrase: chatData.phrase, message: newMessage },
-    });
-
+    socket.emit("send_message", messageData);
     setMsg("");
+
+    // Optional: auto focus input after sending
+    inputRef.current?.focus();
   };
 
   return (
-    <div className="h-[100dvh] flex flex-col w-full bg-[#121c26] text-white p-4">
+    <div className="h-[100dvh] w-full sm:w-[70%] bg-[#121c26] text-white flex flex-col p-4 relative">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <FaArrowLeft
-          onClick={() => navigate(-1)}
           className="cursor-pointer text-xl text-green-400"
+          onClick={() => navigate(-1)}
         />
-        <h2 className="text-xl font-semibold text-green-400">
+        <h1 className="text-2xl font-semibold text-green-400">
           {chatData?.phrase}
-        </h2>
+        </h1>
       </div>
 
-      {/* Created at */}
-      <p className="text-gray-400 text-sm mb-2">
+      {/* Created At */}
+      <p className="text-sm text-gray-400 mb-4">
         Created at: {moment(chatData?.createdAt).format("MMM Do YYYY, h:mm A")}
       </p>
 
-      {/* Message area */}
-      <div className="flex-1 overflow-y-auto px-2 space-y-2">
-        {chatData?.messages.map((m, i) => {
-          const isOwn = m?.sender?._id === user._id;
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto noScroll bg-[#1f2a37] p-3 rounded-lg">
+        {chatData?.messages?.map((message, i) => {
+          const isOwn = message?.sender?._id === user._id;
           return (
             <div
               key={i}
-              className={`max-w-[80%] px-3 py-2 rounded-lg ${
-                isOwn ? "bg-green-600 ml-auto" : "bg-gray-700 mr-auto"
+              className={`p-3 rounded-md mb-2 max-w-xs ${
+                isOwn ? "bg-green-600 ml-auto" : "bg-[#2c3e50] mr-auto"
               }`}
             >
-              <p>{m.text}</p>
-              <p className="text-xs text-gray-300 mt-1">
-                {isOwn ? "You" : m?.sender?.username || "Anon"} •{" "}
-                {moment(m.createdAt).format("h:mm A")}
+              <p className="text-white">{message.text}</p>
+              <p className="text-gray-400 text-xs mt-1">
+                {isOwn ? "You" : message?.sender?.username || "Other"} •{" "}
+                {moment(message.createdAt).format("h:mm A")}
               </p>
             </div>
           );
@@ -117,24 +126,27 @@ const IndiChats = () => {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input form */}
+      {/* Input Area */}
       <form
-        onSubmit={handleSend}
-        className="flex gap-2 pt-3 bg-[#121c26] sticky bottom-0 z-10"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSend();
+        }}
+        className="mt-4 flex gap-2 items-center sticky bottom-0 bg-[#121c26] pt-4"
       >
         <input
           ref={inputRef}
           type="text"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
-          placeholder="Type your message..."
-          className="flex-1 p-3 rounded-lg bg-[#1f2a37] text-white border border-gray-600 outline-none"
-          autoComplete="off"
+          placeholder="Type a message..."
+          className="flex-1 bg-[#1f2a37] text-white p-3 rounded-lg border border-[#2b3b4e] outline-none"
           inputMode="text"
+          autoComplete="off"
         />
         <button
           type="submit"
-          className="bg-green-500 hover:bg-green-600 text-white px-4 rounded-lg"
+          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-white font-semibold"
         >
           Send
         </button>
