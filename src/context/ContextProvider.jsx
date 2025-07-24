@@ -161,6 +161,21 @@ function gReducer(state, payload) {
           ),
         },
       };
+    case "ADD_LOCAL_MESSAGE":
+      return {
+        ...state,
+        chats: {
+          ...state.chats,
+          activeChats: state.chats.activeChats.map((chat) =>
+            chat.phrase === action.value.phrase
+              ? {
+                  ...chat,
+                  messages: [...chat.messages, action.value.message],
+                }
+              : chat
+          ),
+        },
+      };
 
     case "POPULATE_NEW_CHATS":
       return {

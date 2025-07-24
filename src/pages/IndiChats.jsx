@@ -35,7 +35,10 @@ const IndiChats = () => {
     const onNewMessage = async (data) => {
       if (data.phrase === chatData.phrase) {
         const res = await getChats();
-        dispatch({ type: "POPULATE_NEW_CHATS", value: res.data.data.activeChats });
+        dispatch({
+          type: "POPULATE_NEW_CHATS",
+          value: res.data.data.activeChats,
+        });
       }
     };
 
@@ -55,14 +58,22 @@ const IndiChats = () => {
     e.preventDefault();
     if (!msg.trim()) return;
 
-    const message = {
+    const newMessage = {
       text: msg,
       sender: { _id: user._id, username: user.username },
       phrase: chatData.phrase,
       createdAt: new Date(),
     };
 
-    socket.emit("send_message", message);
+    // Emit to server
+    socket.emit("send_message", newMessage);
+
+    // 👇 Immediately update local UI
+    dispatch({
+      type: "ADD_LOCAL_MESSAGE",
+      value: { phrase: chatData.phrase, message: newMessage },
+    });
+
     setMsg("");
   };
 
@@ -74,7 +85,9 @@ const IndiChats = () => {
           onClick={() => navigate(-1)}
           className="cursor-pointer text-xl text-green-400"
         />
-        <h2 className="text-xl font-semibold text-green-400">{chatData?.phrase}</h2>
+        <h2 className="text-xl font-semibold text-green-400">
+          {chatData?.phrase}
+        </h2>
       </div>
 
       {/* Created at */}
