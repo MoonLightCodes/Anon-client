@@ -21,18 +21,20 @@ const IndiChats = () => {
   } = useGlobalContext();
 
   const bottomRef = useRef();
-  const inputRef = useRef();
   const [msg, setMsg] = useState("");
 
+  // Always get latest chatData from global state
   const chatData = useMemo(
     () => activeChats.find((chat) => chat.phrase === phrase),
     [activeChats, phrase]
   );
 
+  // Scroll to bottom when messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatData?.messages]);
 
+  // Fetch latest chats on mount
   useEffect(() => {
     (async () => {
       const res = await getChats();
@@ -43,6 +45,7 @@ const IndiChats = () => {
     })();
   }, []);
 
+  // Join room on mount, leave on unmount
   useEffect(() => {
     if (!chatData) return navigate("/");
 
@@ -50,6 +53,7 @@ const IndiChats = () => {
 
     const handleNewMessage = async (data) => {
       if (data.phrase === chatData.phrase) {
+        // Refetch chats and update state
         const res = await getChats();
         dispatch({
           type: "POPULATE_NEW_CHATS",
@@ -81,14 +85,10 @@ const IndiChats = () => {
 
     socket.emit("send_message", messageData);
     setMsg("");
-
-    // Optional: auto focus input after sending
-    inputRef.current?.focus();
   };
 
   return (
-    <div className="h-[100dvh] w-full sm:w-[70%] bg-[#121c26] text-white flex flex-col p-4 relative">
-      {/* Header */}
+    <div className="h-screen w-full sm:w-[70%] bg-[#121c26] text-white flex flex-col p-4 relative">
       <div className="flex items-center gap-3 mb-4">
         <FaArrowLeft
           className="cursor-pointer text-xl text-green-400"
@@ -98,13 +98,10 @@ const IndiChats = () => {
           {chatData?.phrase}
         </h1>
       </div>
-
-      {/* Created At */}
       <p className="text-sm text-gray-400 mb-4">
         Created at: {moment(chatData?.createdAt).format("MMM Do YYYY, h:mm A")}
       </p>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto noScroll bg-[#1f2a37] p-3 rounded-lg">
         {chatData?.messages?.map((message, i) => {
           const isOwn = message?.sender?._id === user._id;
@@ -126,31 +123,22 @@ const IndiChats = () => {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input Area */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSend();
-        }}
-        className="mt-4 flex gap-2 items-center sticky bottom-0 bg-[#121c26] pt-4"
-      >
+      <div className="mt-4 flex gap-2">
         <input
-          ref={inputRef}
           type="text"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Type a message..."
           className="flex-1 bg-[#1f2a37] text-white p-3 rounded-lg border border-[#2b3b4e] outline-none"
-          inputMode="text"
-          autoComplete="off"
         />
         <button
-          type="submit"
-          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-white font-semibold"
+          onClick={handleSend}
+          className="bg-green-500 hover:bg-green-600 cursor-pointer px-4 py-2 rounded-lg text-white font-semibold"
         >
           Send
         </button>
-      </form>
+      </div>
     </div>
   );
 };
