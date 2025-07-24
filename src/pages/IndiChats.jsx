@@ -23,18 +23,15 @@ const IndiChats = () => {
   const bottomRef = useRef();
   const [msg, setMsg] = useState("");
 
-  // Always get latest chatData from global state
   const chatData = useMemo(
     () => activeChats.find((chat) => chat.phrase === phrase),
     [activeChats, phrase]
   );
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatData?.messages]);
 
-  // Fetch latest chats on mount
   useEffect(() => {
     (async () => {
       const res = await getChats();
@@ -45,7 +42,6 @@ const IndiChats = () => {
     })();
   }, []);
 
-  // Join room on mount, leave on unmount
   useEffect(() => {
     if (!chatData) return navigate("/");
 
@@ -53,7 +49,6 @@ const IndiChats = () => {
 
     const handleNewMessage = async (data) => {
       if (data.phrase === chatData.phrase) {
-        // Refetch chats and update state
         const res = await getChats();
         dispatch({
           type: "POPULATE_NEW_CHATS",
@@ -88,7 +83,8 @@ const IndiChats = () => {
   };
 
   return (
-    <div className="h-screen w-full sm:w-[70%] bg-[#121c26] text-white flex flex-col p-4 relative">
+    <div className="h-[100dvh] w-full sm:w-[70%] bg-[#121c26] text-white flex flex-col p-4 relative">
+      {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <FaArrowLeft
           className="cursor-pointer text-xl text-green-400"
@@ -98,10 +94,13 @@ const IndiChats = () => {
           {chatData?.phrase}
         </h1>
       </div>
+
+      {/* Created At */}
       <p className="text-sm text-gray-400 mb-4">
         Created at: {moment(chatData?.createdAt).format("MMM Do YYYY, h:mm A")}
       </p>
 
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto noScroll bg-[#1f2a37] p-3 rounded-lg">
         {chatData?.messages?.map((message, i) => {
           const isOwn = message?.sender?._id === user._id;
@@ -123,14 +122,22 @@ const IndiChats = () => {
         <div ref={bottomRef} />
       </div>
 
-      <div className="mt-4 flex gap-2">
+      {/* Input Area */}
+      <div className="mt-4 flex gap-2 items-center">
         <input
           type="text"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
           placeholder="Type a message..."
           className="flex-1 bg-[#1f2a37] text-white p-3 rounded-lg border border-[#2b3b4e] outline-none"
+          inputMode="text"
+          autoComplete="off"
         />
         <button
           onClick={handleSend}
