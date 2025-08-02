@@ -1,4 +1,4 @@
-export const baseUrl = 'https://anon-api-r4wr.onrender.com'
+export const baseUrl = 'http://localhost:8888'
 const  paths={
     baseUrl,
     createRoom : baseUrl+'/api/createRoom',

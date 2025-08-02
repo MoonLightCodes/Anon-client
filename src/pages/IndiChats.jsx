@@ -47,7 +47,7 @@ const IndiChats = () => {
 
   // Join room on mount, leave on unmount
   useEffect(() => {
-    if (!chatData) return navigate("/");
+    if (!chatData) return navigate("/chats");
 
     socket.emit("join_room", { roomPhrase: chatData.phrase });
 
