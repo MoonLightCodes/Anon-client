@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:8888/", {
+const socket = io("https://anon-server-9ykk.onrender.com/", {
   auth: {
     userId: localStorage.getItem("userId"), // Must be a valid MongoDB ObjectId
   },

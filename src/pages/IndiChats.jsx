@@ -70,7 +70,7 @@ const IndiChats = () => {
     };
   }, [chatData]);
 
-  const handleSend = () => {
+  const handleSend = (e) => {
     if (!msg.trim()) return;
 
     const messageData = {
