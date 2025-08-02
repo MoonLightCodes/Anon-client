@@ -1,15 +1,11 @@
 import React, { createContext, useContext, useReducer } from "react";
 import { io } from "socket.io-client";
 
-export const socket = io("https://anon-server-9ykk.onrender.com/", {
-  transports: ["websocket"],
-  secure: true,
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  timeout: 10000,
-  autoConnect: true,
+const socket = io("https://anon-server-9ykk.onrender.com/", {
+  auth: {
+    userId: localStorage.getItem("userId"), // Must be a valid MongoDB ObjectId
+  },
 });
-
 const contextP = createContext();
 export const useGlobalContext = () => useContext(contextP);
 
