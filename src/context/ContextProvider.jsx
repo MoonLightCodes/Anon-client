@@ -6,6 +6,7 @@ const socket = io("https://anon-server-9ykk.onrender.com/", {
     userId: localStorage.getItem("userId"), // Must be a valid MongoDB ObjectId
   },
 });
+
 const contextP = createContext();
 export const useGlobalContext = () => useContext(contextP);
 
