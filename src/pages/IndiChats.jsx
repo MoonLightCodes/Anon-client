@@ -70,8 +70,7 @@ const IndiChats = () => {
     };
   }, [chatData]);
 
-  const handleSend = (e) => {
-    e.preventDefault();
+  const handleSend = () => {
     if (!msg.trim()) return;
 
     const messageData = {
@@ -129,12 +128,7 @@ const IndiChats = () => {
           type="text"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault(); // prevent mobile browsers from submitting form
-              handleSend();
-            }
-          }}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Type a message..."
           className="flex-1 bg-[#1f2a37] text-white p-3 rounded-lg border border-[#2b3b4e] outline-none"
         />
