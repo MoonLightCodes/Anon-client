@@ -1,4 +1,4 @@
-export const baseUrl = 'http://localhost:8888'
+export const baseUrl = 'https://anon-server-9ykk.onrender.com'
 const  paths={
     baseUrl,
     createRoom : baseUrl+'/api/createRoom',
