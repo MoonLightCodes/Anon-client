@@ -114,7 +114,7 @@ const IndiChats = () => {
           }`}
         >
           <p className="text-white break-words">{message.text}</p>
-          <p className="text-slate-900 text-xs mt-1">
+          <p className="text-gray-400 text-xs mt-1">
             {isOwn ? "You" : message?.sender?.username || "Other"} •{" "}
             {moment(message.createdAt).format("h:mm A")}
           </p>
