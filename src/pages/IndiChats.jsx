@@ -88,58 +88,60 @@ const IndiChats = () => {
   };
 
   return (
-    <div className="h-screen w-full sm:w-[70%] bg-[#121c26] text-white flex flex-col p-4 relative">
-      <div className="flex items-center gap-3 mb-4">
-        <FaArrowLeft
-          className="cursor-pointer text-xl text-green-400"
-          onClick={() => navigate(-1)}
-        />
-        <h1 className="text-2xl font-semibold text-green-400">
-          {chatData?.phrase}
-        </h1>
-      </div>
-      <p className="text-sm text-gray-400 mb-4">
-        Created at: {moment(chatData?.createdAt).format("MMM Do YYYY, h:mm A")}
-      </p>
+    <div className="h-screen w-full bg-[#121c26] text-white flex flex-col p-3 sm:p-4 relative">
+  <div className="flex items-center gap-3 mb-3">
+    <FaArrowLeft
+      className="cursor-pointer text-xl text-green-400"
+      onClick={() => navigate(-1)}
+    />
+    <h1 className="text-lg sm:text-2xl font-semibold text-green-400 truncate">
+      {chatData?.phrase}
+    </h1>
+  </div>
 
-      <div className="flex-1 overflow-y-auto noScroll bg-[#1f2a37] p-3 rounded-lg">
-        {chatData?.messages?.map((message, i) => {
-          const isOwn = message?.sender?._id === user._id;
-          return (
-            <div
-              key={i}
-              className={`p-3 rounded-md mb-2 max-w-xs ${
-                isOwn ? "bg-green-600 ml-auto" : "bg-[#2c3e50] mr-auto"
-              }`}
-            >
-              <p className="text-white">{message.text}</p>
-              <p className="text-slate-800 text-xs mt-1">
-                {isOwn ? "You" : message?.sender?.username || "Other"} •{" "}
-                {moment(message.createdAt).format("h:mm A")}
-              </p>
-            </div>
-          );
-        })}
-        <div ref={bottomRef} />
-      </div>
+  <p className="text-xs sm:text-sm text-gray-400 mb-3 truncate">
+    Created at: {moment(chatData?.createdAt).format("MMM Do YYYY, h:mm A")}
+  </p>
 
-      <div className="mt-4 flex gap-2">
-        <input
-          type="text"
-          value={msg}
-          onChange={(e) => setMsg(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Type a message..."
-          className="flex-1 bg-[#1f2a37] text-white p-3 rounded-lg border border-[#2b3b4e] outline-none"
-        />
-        <button
-          onClick={handleSend}
-          className="bg-green-500 hover:bg-green-600 cursor-pointer px-4 py-2 rounded-lg text-white font-semibold"
+  <div className="flex-1 overflow-y-auto noScroll bg-[#1f2a37] p-3 rounded-lg">
+    {chatData?.messages?.map((message, i) => {
+      const isOwn = message?.sender?._id === user._id;
+      return (
+        <div
+          key={i}
+          className={`p-3 rounded-md mb-2 max-w-[85%] sm:max-w-xs break-words ${
+            isOwn ? "bg-green-600 ml-auto" : "bg-[#2c3e50] mr-auto"
+          }`}
         >
-          Send
-        </button>
-      </div>
-    </div>
+          <p className="text-white break-words">{message.text}</p>
+          <p className="text-slate-400 text-xs mt-1">
+            {isOwn ? "You" : message?.sender?.username || "Other"} •{" "}
+            {moment(message.createdAt).format("h:mm A")}
+          </p>
+        </div>
+      );
+    })}
+    <div ref={bottomRef} />
+  </div>
+
+  <div className="mt-3 flex gap-2 items-center">
+    <input
+      type="text"
+      value={msg}
+      onChange={(e) => setMsg(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && handleSend()}
+      placeholder="Type a message..."
+      className="flex-1 bg-[#1f2a37] text-white p-3 rounded-lg border border-[#2b3b4e] outline-none text-sm"
+    />
+    <button
+      onClick={handleSend}
+      className="bg-green-500 hover:bg-green-600 cursor-pointer px-4 py-2 rounded-lg text-white font-semibold text-sm whitespace-nowrap"
+    >
+      Send
+    </button>
+  </div>
+</div>
+
   );
 };
 

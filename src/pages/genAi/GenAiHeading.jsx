@@ -1,0 +1,42 @@
+import React from "react";
+
+const googleColors = [
+  "text-blue-500",
+  "text-red-500",
+  "text-yellow-500",
+  "text-blue-500",
+  "text-green-500",
+  "text-red-500",
+];
+const GenAiHeading = () => {
+  return (
+    <h1 className="sm:text-2xl justify-center items-center text-lg flex gap-2 p-3 select-none ">
+      <span>
+        {"Poorna".split("").map((e, i) => (
+          <span key={i} className={googleColors[i]}>
+            {e}
+          </span>
+        ))}{" "}
+      </span>
+      <span className="text-indigo-300 flex">
+        Gen AI
+        <svg
+          className="inline-block ml-2"
+          _ngcontent-ng-c2602209928=""
+          xmlns="http://www.w3.org/2000/svg"
+          height="24"
+          width="24"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            _ngcontent-ng-c2602209928=""
+            d="M12 21.5C12 20.1833 11.75 18.95 11.25 17.8C10.75 16.6333 10.075 15.625 9.225 14.775C8.375 13.925 7.36667 13.25 6.2 12.75C5.05 12.25 3.81667 12 2.5 12C3.81667 12 5.05 11.75 6.2 11.25C7.36667 10.75 8.375 10.075 9.225 9.225C10.075 8.375 10.75 7.375 11.25 6.225C11.75 5.05833 12 3.81667 12 2.5C12 3.81667 12.25 5.05833 12.75 6.225C13.25 7.375 13.925 8.375 14.775 9.225C15.625 10.075 16.625 10.75 17.775 11.25C18.9417 11.75 20.1833 12 21.5 12C20.1833 12 18.9417 12.25 17.775 12.75C16.625 13.25 15.625 13.925 14.775 14.775C13.925 15.625 13.25 16.6333 12.75 17.8C12.25 18.95 12 20.1833 12 21.5Z"
+          ></path>
+        </svg>
+      </span>
+    </h1>
+  );
+};
+
+export default GenAiHeading;

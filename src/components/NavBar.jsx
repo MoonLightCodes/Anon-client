@@ -5,6 +5,7 @@ import { PiChatsCircleLight } from "react-icons/pi";
 import { CiHome } from "react-icons/ci";
 import { CiLogout } from "react-icons/ci";
 import { useGlobalContext } from "../context/ContextProvider";
+import { RiAiGenerate } from "react-icons/ri";
 
 const NavBar = React.memo(() => {
   const location = useLocation();
@@ -52,6 +53,16 @@ const NavBar = React.memo(() => {
           <span className="sm:block hidden">Chats</span>
         </button>
         <button
+          title="GenAi"
+          className={`p-2 bg-sky-400 ${
+            currPath === "/P-AI" ? "bg-sky-700" : ""
+          } rounded-2xl  flex items-center gap-3 cursor-pointer`}
+          onClick={() => void (navigate("/P-AI"), setCurrPath("/P-AI"))}
+        >
+          <RiAiGenerate  className="text-2xl" />
+          <span className="sm:block hidden">GenAi</span>
+        </button>
+         <button
           title="Logout"
           className={`p-2 ${
             currPath === "/login" ? "bg-[#0a1017]" : ""

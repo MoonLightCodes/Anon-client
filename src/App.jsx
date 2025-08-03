@@ -10,6 +10,7 @@ import NewChat from "./components/NewChat";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import { getChats } from "./server/homePage";
+import GenAiMain from "./pages/genAi/GenAiMain.jsx";
 
 export const App = () => {
   const {
@@ -40,8 +41,6 @@ export const App = () => {
       });
     })();
   }, []);
- 
-
 
   return (
     <>
@@ -54,6 +53,7 @@ export const App = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/chats" element={<Chats />} />
           <Route path="/indiChat" element={<IndiChats />} />
+          <Route path="/P-AI" element={<GenAiMain />} />
         </Route>
       </Routes>
     </>
