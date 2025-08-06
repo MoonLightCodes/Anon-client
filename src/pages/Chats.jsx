@@ -79,7 +79,7 @@ const Chats = () => {
             No chats yet. Create one and start Anon-ing.
           </p>
         ) : (
-          activeChats.map((chat) => (
+          activeChats.reverse().map((chat) => (
             <div
               onClick={() => navigate("/indiChat", { state: { phrase:chat.phrase } })}
               key={chat._id}
