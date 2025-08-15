@@ -6,6 +6,7 @@ import { CiHome } from "react-icons/ci";
 import { CiLogout } from "react-icons/ci";
 import { useGlobalContext } from "../context/ContextProvider";
 import { RiAiGenerate } from "react-icons/ri";
+import { PiGameControllerThin } from "react-icons/pi";
 
 const NavBar = React.memo(() => {
   const location = useLocation();
@@ -62,7 +63,17 @@ const NavBar = React.memo(() => {
           <RiAiGenerate  className="text-2xl" />
           <span className="sm:block hidden">GenAi</span>
         </button>
-         <button
+        <button
+          title="Game"
+          className={`p-2 ${
+            currPath === "/game" ? "bg-[#0a1017]" : ""
+          } rounded-2xl  flex items-center gap-3 cursor-pointer`}
+          onClick={() => void (navigate("/game"), setCurrPath("/game"))}
+        >
+          <PiGameControllerThin className="text-2xl"/>
+          <span className="sm:block hidden">Game</span>
+        </button>
+        <button
           title="Logout"
           className={`p-2 ${
             currPath === "/login" ? "bg-[#0a1017]" : ""
@@ -72,6 +83,7 @@ const NavBar = React.memo(() => {
           <CiLogout className="text-2xl" />
           <span className="sm:block hidden">Logout</span>
         </button>
+         
       </div>
     </div>
   );
