@@ -422,21 +422,21 @@ const TopBar = ({ lives, timer }) => {
 /** Number pad */
 const NumberPad = ({ onClick, onClear }) => {
   return (
-    <div className="mt-4 grid grid-cols-10 gap-2 w-fit mx-auto">
+    <div className="mt-4 grid grid-cols-10 gap-5  w-fit mx-auto">
       {range9.map((i) => (
         <button
           key={i + 1}
           onClick={() => onClick(i + 1)}
-          className="px-3 py-4 text-2xl text-center rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-semibold"
+          className="px-4  py-4 text-center rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-semibold"
         >
           {i + 1}
         </button>
       ))}
       <button
         onClick={onClear}
-        className=" py-4 text-2xl rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-semibold"
+        className=" py-4 px-4 text-center text-2xl relative rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-semibold"
       >
-        <span title="clear entry" >❌</span>
+        <span className="absolute top-1/2 left-1/2 -translate-1/2">❌</span>
       </button>
     </div>
   );
