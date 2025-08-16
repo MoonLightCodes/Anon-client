@@ -427,17 +427,16 @@ const NumberPad = ({ onClick, onClear }) => {
         <button
           key={i + 1}
           onClick={() => onClick(i + 1)}
-          className="px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-semibold"
+          className="px-3 py-4 text-2xl text-center rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-semibold"
         >
           {i + 1}
         </button>
       ))}
       <button
         onClick={onClear}
-        className="px-1 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-semibold"
+        className=" py-4 text-2xl rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-semibold"
       >
-        <span className="hidden sm:block">Clear</span>
-        <span className="block sm:hidden">❌</span>
+        <span title="clear entry" >❌</span>
       </button>
     </div>
   );
@@ -487,7 +486,7 @@ const Cell = ({ r, c, val, selected, setSelected, fixed, incorrect }) => {
 
   return (
     <div
-      className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 cursor-pointer ${borders} border-gray-900 text-white ${bg} ${
+      className={`flex items-center text-center justify-center w-10 h-10 sm:w-12 sm:h-12 cursor-pointer ${borders} border-gray-900 text-white ${bg} ${
         fixed ? "font-extrabold" : val ? "font-bold" : ""
       }`}
       onClick={() => setSelected([r, c])}
