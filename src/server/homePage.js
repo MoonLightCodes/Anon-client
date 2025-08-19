@@ -42,6 +42,18 @@ export const deleteChat = (roomPhrase) => {
     }
   );
 };
+export const fileUpload = (formData) => {
+  return axios.post(
+    paths.fileUpload,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    }
+  );
+};
 export const exitChat = (roomPhrase) => {
   return axios.put(
     paths.exitChat,

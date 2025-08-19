@@ -8,6 +8,7 @@ const  paths={
     getChats: baseUrl+'/api/getChats',
     deleteChat:baseUrl+'/api/deleteChat',
     exitChat:baseUrl+'/api/exitChat',
+    fileUpload:baseUrl+'/api/photoUpload',
 }
 export default paths;
    

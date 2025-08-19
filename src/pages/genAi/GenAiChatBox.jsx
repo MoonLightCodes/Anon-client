@@ -1,38 +1,73 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-const GenAiChatBox = ({ messages,loading }) => {
-  const chatboxRef = React.useRef(null);
+const GenAiChatBox = ({ messages, loading }) => {
+  const chatboxRef = useRef(null);
+
+  // Scroll to bottom whenever messages change
   useEffect(() => {
-    chatboxRef.current &&
-      (chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight);
+    if (chatboxRef.current) {
+      chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+    }
   }, [messages]);
+
+  // Function to detect code blocks (```language\ncode```) and render them
+  const renderMessage = (text) => {
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+
+    if (!codeBlockRegex.test(text)) {
+      return <span>{text}</span>;
+    }
+
+    const parts = [];
+    let lastIndex = 0;
+    text.replace(codeBlockRegex, (match, lang, code, offset) => {
+      if (offset > lastIndex) {
+        parts.push(<span key={lastIndex}>{text.slice(lastIndex, offset)}</span>);
+      }
+      parts.push(
+        <SyntaxHighlighter key={offset} language={lang || "text"} style={oneDark} wrapLines>
+          {code}
+        </SyntaxHighlighter>
+      );
+      lastIndex = offset + match.length;
+      return match;
+    });
+
+    if (lastIndex < text.length) {
+      parts.push(<span key={lastIndex}>{text.slice(lastIndex)}</span>);
+    }
+
+    return parts;
+  };
+
   return (
     <div
-      className="flex-1 w-full max-w-3xl  mx-auto overflow-y-auto px-4 py-6 space-y-4"
-      style={{ scrollbarWidth: "none" }}
       ref={chatboxRef}
+      className="flex-1 w-full max-w-3xl mx-auto overflow-y-auto px-4 py-6 space-y-4"
+      style={{ scrollbarWidth: "none" }}
     >
-      {messages?.map((msg, i) => (
-        <div
-          key={i}
-          className={`flex ${
-            msg.type === "user" ? "justify-end" : "justify-start"
-          }`}
-        >
-          <div
-            className={`max-w-xs sm:max-w-md px-4 py-3 rounded-2xl text-sm sm:text-base shadow-lg ${
-              msg.type === "user"
-                ? "bg-gradient-to-br from-indigo-500 to-purple-600 text-white"
-                : "bg-slate-600 text-white"
-            }`}
-          >
-            {msg.text}
+      {messages?.map((msg, i) => {
+        const isUser = msg.type === "user";
+        return (
+          <div key={i} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+            <div
+              className={`max-w-xs sm:max-w-md px-4 py-3 rounded-2xl text-sm sm:text-base shadow-lg ${
+                isUser
+                  ? "bg-gradient-to-br from-indigo-500 to-purple-600 text-white"
+                  : "bg-slate-600 text-white"
+              }`}
+            >
+              {renderMessage(msg.text)}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
+
       {loading && (
         <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 "></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
         </div>
       )}
     </div>

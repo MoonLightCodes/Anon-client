@@ -8,6 +8,7 @@ import { deleteChat, exitChat, getChats } from "../server/homePage";
 import { TbDoorExit } from "react-icons/tb";
 
 const Chats = () => {
+  const my_userId = localStorage.getItem('userId')
   const {
     state,
     state: {
@@ -85,7 +86,7 @@ const Chats = () => {
               key={chat._id}
               className="bg-[#1f2a37] relative text-white p-4 rounded-xl shadow-inner border border-[#2b3b4e] hover:bg-[#2c3e50] transition duration-200"
             >
-              <div
+              {my_userId===chat.members[0]._id &&  <div
                 className="absolute right-3 text-red-300 cursor-pointer hover:scale-110"
                 title="Delete ROom"
                 onClick={(e) =>
@@ -93,7 +94,7 @@ const Chats = () => {
                 }
               >
                 <FaTrashAlt />
-              </div>
+              </div>}
               <div
                 className="absolute right-3 bottom-12 text-sky-300 cursor-pointer hover:scale-110"
                 title="Exit Room"

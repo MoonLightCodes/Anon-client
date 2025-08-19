@@ -10,14 +10,15 @@
     "start": "vite preview --port $PORT --host"
   },
   "dependencies": {
+    "@google/genai": "^1.8.0",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.10.0",
-    "@google/genai": "^1.8.0",
     "moment": "^2.30.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.7.0",
+    "react-syntax-highlighter": "^15.6.1",
     "socket.io-client": "^4.8.1",
     "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.1.11"
