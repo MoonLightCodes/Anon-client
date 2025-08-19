@@ -109,7 +109,7 @@ const Chats = () => {
 
                 {/* Exit button */}
                 <div
-                  className="absolute top-6 right-3 text-sky-300 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
+                  className="absolute top-9 right-3 text-sky-300 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
                   title="Exit Room"
                   onClick={(e) =>
                     void (e.stopPropagation(), handleExit(chat.phrase))
