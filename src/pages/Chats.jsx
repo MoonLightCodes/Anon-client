@@ -40,33 +40,37 @@ const Chats = () => {
     });
     setSocket(newSocket);
 
-    // Clean up on unmount
     return () => {
       newSocket.disconnect();
     };
-  }, []);
+  }, [my_userId]);
 
   // Fetch chats and listen for new messages
   useEffect(() => {
     if (!socket) return;
 
     const fetchChats = async () => {
-      const data = await getChats();
-      dispatch({
-        type:"SET_NOTIFICATION",
-        value: data.data.data.activeChats.some(e=>e.unreadUsers.some(el=>el === my_userId))
-      })
-      dispatch({
-        type: "POPULATE_NEW_CHATS",
-        value: data.data.data.activeChats,
-      });
+      try {
+        const data = await getChats();
+        dispatch({
+          type: "SET_NOTIFICATION",
+          value: data.data.data.activeChats.some((chat) =>
+            chat.unreadUsers?.some((u) => u === my_userId)
+          ),
+        });
+        dispatch({
+          type: "POPULATE_NEW_CHATS",
+          value: data.data.data.activeChats,
+        });
+      } catch (err) {
+        console.error(err);
+      }
     };
 
     fetchChats();
 
-    // Listener for new messages
-    const handleNewMessage = (msg) => {
-      fetchChats(); // refresh chats on new message
+    const handleNewMessage = () => {
+      fetchChats(); // Refresh chats on new message
     };
 
     socket.on("newMessage", handleNewMessage);
@@ -74,7 +78,7 @@ const Chats = () => {
     return () => {
       socket.off("newMessage", handleNewMessage);
     };
-  }, [socket, dispatch]);
+  }, [socket, dispatch, my_userId]);
 
   const handleDelete = async (roomPhrase) => {
     try {
@@ -96,7 +100,6 @@ const Chats = () => {
 
   return (
     <div className="w-full relative px-4 sm:px-6 lg:px-10">
-      {/* Floating add button */}
       {!newChatModelIsOpen && (
         <div
           className="absolute top-4 right-4 cursor-pointer z-10"
@@ -131,7 +134,7 @@ const Chats = () => {
                 className="relative bg-gradient-to-tr from-[#1f2a37] to-[#2c3e50] text-white p-5 rounded-2xl shadow-2xl border border-[#2b3b4e] hover:scale-[1.01] hover:shadow-xl transition-all duration-300 cursor-pointer group"
               >
                 {/* Delete button (only for creator) */}
-                {my_userId === chat?.members[0]._id && (
+                {chat.members?.[0]?._id === my_userId && (
                   <div
                     className="absolute top-3 text-xl sm:text-3xl right-6 text-red-400 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
                     title="Delete Room"
@@ -162,19 +165,20 @@ const Chats = () => {
                   {chat.phrase}
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-400">
-                  Created: {moment(chat.createdAt).format("MMM Do YYYY, h:mm A")}
+                  Created:{" "}
+                  {moment(chat.createdAt).format("MMM Do YYYY, h:mm A")}
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-2 sm:gap-0">
                   <span className="flex items-center gap-2 text-gray-300">
                     <FaUsers className="text-sm sm:text-base text-green-300" />
-                    {chat.members?.length} Member
-                    {chat.members?.length !== 1 ? "s" : ""}
+                    {chat.members?.length || 0} Member
+                    {(chat.members?.length || 0) !== 1 ? "s" : ""}
                   </span>
                   <span className="flex items-center gap-2 text-gray-300">
                     <FaCommentDots className="text-sm sm:text-base text-green-200" />
-                    {chat.messages?.length} Message
-                    {chat.messages?.length !== 1 ? "s" : ""}
+                    {chat.messages?.length || 0} Message
+                    {(chat.messages?.length || 0) !== 1 ? "s" : ""}
                   </span>
                 </div>
               </div>
