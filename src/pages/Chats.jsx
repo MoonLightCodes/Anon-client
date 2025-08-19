@@ -136,11 +136,12 @@ const Chats = () => {
                 {/* Delete button (only for creator) */}
                 {chat.members?.[0]?._id === my_userId && (
                   <div
-                    className="absolute top-3 text-xl sm:text-3xl right-6 text-red-400 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
+                    className="absolute top-3 right-6 z-20 text-red-400 text-xl sm:text-3xl opacity-80 hover:opacity-100 hover:scale-125 transition-all duration-300 cursor-pointer"
                     title="Delete Room"
-                    onClick={(e) =>
-                      void (e.stopPropagation(), handleDelete(chat.phrase))
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(chat.phrase);
+                    }}
                   >
                     <FaTrashAlt />
                   </div>
