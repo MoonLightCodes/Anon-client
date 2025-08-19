@@ -12,6 +12,7 @@ const Chats = () => {
   const {
     state,
     state: {
+      socket,
       chats: { activeChats },
       newChatModel: { isOpen: newChatModelIsOpen },
       phraseModel: { isOpen: phraseModelIsOpen },
@@ -57,6 +58,21 @@ const Chats = () => {
       });
     })();
   }, [state.phraseModel, state.newChatModel, first]);
+
+  useEffect(()=>{
+    const  fn = async function () {
+      const data = await getChats();
+      dispatch({
+        type: "POPULATE_NEW_CHATS",
+        value: data.data.data.activeChats,
+      });
+    }
+    socket.on("newMessage", fn);
+return ()=>{
+    socket.off("newMessage", fn);
+
+}
+  },[])
 
   return (
     <div className="w-full relative px-4 sm:px-6 lg:px-10">
