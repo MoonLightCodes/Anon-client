@@ -92,12 +92,12 @@ const Chats = () => {
                 onClick={() =>
                   navigate("/indiChat", { state: { phrase: chat.phrase } })
                 }
-                className="relative bg-gradient-to-tr from-[#1f2a37] to-[#2c3e50] text-white p-5 rounded-2xl shadow-2xl border border-[#2b3b4e] hover:scale-[1.03] hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                className="relative bg-gradient-to-tr from-[#1f2a37] to-[#2c3e50] text-white p-5 rounded-2xl shadow-2xl border border-[#2b3b4e] hover:scale-[1.01] hover:shadow-xl transition-all duration-300 cursor-pointer group"
               >
                 {/* Delete button (only for creator) */}
                 {my_userId === chat.members[0]._id && (
                   <div
-                    className="absolute top-3 right-3 text-red-400 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
+                    className="absolute top-3 text-xl sm:text-3xl right-6 text-red-400 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
                     title="Delete Room"
                     onClick={(e) =>
                       void (e.stopPropagation(), handleDelete(chat.phrase))
@@ -109,7 +109,7 @@ const Chats = () => {
 
                 {/* Exit button */}
                 <div
-                  className="absolute top-9 right-3 text-sky-300 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
+                  className="absolute top-16 text-xl sm:text-3xl right-6 text-sky-300 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
                   title="Exit Room"
                   onClick={(e) =>
                     void (e.stopPropagation(), handleExit(chat.phrase))
