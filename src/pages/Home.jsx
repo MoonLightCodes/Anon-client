@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
 import { useGlobalContext } from "../context/ContextProvider";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { state, dispatch } = useGlobalContext();
+  const navigate = useNavigate()
 
   // Lock scroll when phrase model is open
   useEffect(() => {
@@ -38,7 +40,7 @@ const Home = () => {
           >
             🚀 Start a New Chat
           </button>
-          <button className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl cursor-pointer font-semibold text-white hover:scale-105 transition">
+          <button className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl cursor-pointer font-semibold text-white hover:scale-105 transition" onClick={()=>navigate('/learnmore')}>
             Learn More
           </button>
         </div>

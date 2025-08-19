@@ -12,6 +12,7 @@ import SignUp from "./pages/SignUp";
 import { getChats } from "./server/homePage";
 import GenAiMain from "./pages/genAi/GenAiMain.jsx";
 import SudokuMain from "./pages/Sudoku.jsx";
+import LearnMore from "./pages/LearnMore.jsx";
 
 export const App = () => {
   const {
@@ -56,6 +57,7 @@ export const App = () => {
           <Route path="/indiChat" element={<IndiChats />} />
           <Route path="/P-AI" element={<GenAiMain />} />
           <Route path="/game" element={<SudokuMain />} />
+          <Route path="/learnmore" element={<LearnMore />} />
         </Route>
       </Routes>
     </>
