@@ -6,13 +6,13 @@ import { FaCommentDots, FaTrashAlt, FaUsers } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { deleteChat, exitChat, getChats } from "../server/homePage";
 import { TbDoorExit } from "react-icons/tb";
+import { io } from "socket.io-client";
 
 const Chats = () => {
   const my_userId = localStorage.getItem("userId");
   const {
     state,
     state: {
-      socket,
       chats: { activeChats },
       newChatModel: { isOpen: newChatModelIsOpen },
       phraseModel: { isOpen: phraseModelIsOpen },
@@ -21,8 +21,10 @@ const Chats = () => {
   } = useGlobalContext();
 
   const [first, setfirst] = useState(false);
+  const [socket, setSocket] = useState(null);
   const navigate = useNavigate();
 
+  // Scroll lock when modals open
   useEffect(() => {
     if (newChatModelIsOpen || phraseModelIsOpen) {
       document.body.classList.add("no-scroll");
@@ -30,6 +32,49 @@ const Chats = () => {
       document.body.classList.remove("no-scroll");
     }
   }, [newChatModelIsOpen, phraseModelIsOpen, first]);
+
+  // Initialize socket connection every time component mounts
+  useEffect(() => {
+    const newSocket = io("https://anon-server-9ykk.onrender.com", {
+      auth: { userId: my_userId },
+    });
+    setSocket(newSocket);
+
+    // Clean up on unmount
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  // Fetch chats and listen for new messages
+  useEffect(() => {
+    if (!socket) return;
+
+    const fetchChats = async () => {
+      const data = await getChats();
+      dispatch({
+        type:"SET_NOTIFICATION",
+        value: data.data.data.activeChats.some(e=>e.unreadUsers.some(el=>el === my_userId))
+      })
+      dispatch({
+        type: "POPULATE_NEW_CHATS",
+        value: data.data.data.activeChats,
+      });
+    };
+
+    fetchChats();
+
+    // Listener for new messages
+    const handleNewMessage = (msg) => {
+      fetchChats(); // refresh chats on new message
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket, dispatch]);
 
   const handleDelete = async (roomPhrase) => {
     try {
@@ -48,31 +93,6 @@ const Chats = () => {
       console.log(error.messages);
     }
   };
-
-  useEffect(() => {
-    (async function () {
-      const data = await getChats();
-      dispatch({
-        type: "POPULATE_NEW_CHATS",
-        value: data.data.data.activeChats,
-      });
-    })();
-  }, [state.phraseModel, state.newChatModel, first]);
-
-  useEffect(()=>{
-    const  fn = async function () {
-      const data = await getChats();
-      dispatch({
-        type: "POPULATE_NEW_CHATS",
-        value: data.data.data.activeChats,
-      });
-    }
-    socket.on("newMessage", fn);
-return ()=>{
-    socket.off("newMessage", fn);
-
-}
-  },[])
 
   return (
     <div className="w-full relative px-4 sm:px-6 lg:px-10">
@@ -111,7 +131,7 @@ return ()=>{
                 className="relative bg-gradient-to-tr from-[#1f2a37] to-[#2c3e50] text-white p-5 rounded-2xl shadow-2xl border border-[#2b3b4e] hover:scale-[1.01] hover:shadow-xl transition-all duration-300 cursor-pointer group"
               >
                 {/* Delete button (only for creator) */}
-                {my_userId === chat.members[0]._id && (
+                {my_userId === chat?.members[0]._id && (
                   <div
                     className="absolute top-3 text-xl sm:text-3xl right-6 text-red-400 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
                     title="Delete Room"
@@ -133,6 +153,10 @@ return ()=>{
                 >
                   <TbDoorExit />
                 </div>
+
+                {chat.unreadUsers?.some((e) => e === my_userId) && (
+                  <div className="w-3 h-3 rounded-full bg-rose-500 animate-ping" />
+                )}
 
                 <h2 className="text-xl sm:text-2xl font-semibold tracking-wide mb-2 text-green-400 drop-shadow-md">
                   {chat.phrase}

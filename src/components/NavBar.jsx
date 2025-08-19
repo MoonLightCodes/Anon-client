@@ -18,6 +18,7 @@ const NavBar = React.memo(() => {
   const {
     state,
     state: {
+      chats:{notification},
       newChatModel: { isOpen: newChatModelIsOpen },
     },
   } = useGlobalContext();
@@ -47,9 +48,10 @@ const NavBar = React.memo(() => {
           title="Chats"
           className={`p-2 ${
             currPath === "/chats" ? "bg-[#0a1017]" : ""
-          } rounded-2xl  flex items-center gap-3 cursor-pointer`}
+          } rounded-2xl relative flex items-center gap-3 cursor-pointer`}
           onClick={() => void (navigate("/chats"), setCurrPath("/chats"))}
         >
+          {notification&&<div className="w-3 h-3 -top-1 rounded-full absolute bg-red-500 -right-1"/>}
           <PiChatsCircleLight className="text-2xl" />
           <span className="sm:block hidden">Chats</span>
         </button>

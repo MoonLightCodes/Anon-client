@@ -22,6 +22,7 @@ const initialState = {
   },
   chats: {
     activeChats: [],
+    notification : true,
   },
   newChatModel: {
     isOpen: false,
@@ -81,7 +82,15 @@ function gReducer(state, payload) {
           createRoomPass: payload.value,
         },
       };
-    case "TOGGLE_NEW_CHAT_MODEL":
+    case "SET_NOTIFICATION":
+      return {
+        ...state,
+        chats: {
+          ...state.notification,
+          notification: payload.value,
+        },
+      };
+      case "TOGGLE_NEW_CHAT_MODEL":
       return {
         ...state,
         newChatModel: {
