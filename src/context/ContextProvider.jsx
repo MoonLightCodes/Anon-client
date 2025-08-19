@@ -22,7 +22,7 @@ const initialState = {
   },
   chats: {
     activeChats: [],
-    notification : true,
+    notification : false,
   },
   newChatModel: {
     isOpen: false,
