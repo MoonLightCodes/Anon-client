@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { signUpApi } from "../server/signUpPage";
-import logo from '../assets/anonLogo.png'
+import logo from "../assets/anonLogo.png";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -59,75 +59,85 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex flex-col select-none sm:flex-row-reverse justify-center items-center min-h-screen bg-[#131d27] text-white px-4">
-      <div className="aspect-square select-none sm:w-1/3 w-1/2">
-        <img src={logo} alt="LOGO" />
+    <div className="flex flex-col sm:flex-row-reverse justify-center items-center h-screen w-screen bg-[#131d27] text-white px-4 overflow-hidden">
+      {/* Logo Section */}
+      <div className="aspect-square sm:w-1/3 w-1/2 flex justify-center items-center">
+        <img src={logo} alt="LOGO" className="max-w-full max-h-full" />
       </div>
-      <div className="bg-[#111820] p-8 rounded-2xl w-full max-w-md shadow-2xl">
-        <h2 className="text-3xl font-semibold select-none text-center mb-6 text-green-400">
-          Sign Up
+
+      {/* Form Section */}
+      <div className="bg-[#111820] p-8 rounded-2xl w-full max-w-md shadow-2xl sm:mr-8">
+        <h2 className="text-3xl font-semibold text-center mb-6 text-green-400">
+          Create Account
         </h2>
 
         {error && <div className="text-red-400 text-center mb-4">{error}</div>}
-        {success && (
-          <div className="text-green-400 text-center mb-4">{success}</div>
-        )}
+        {success && <div className="text-green-400 text-center mb-4">{success}</div>}
 
         <form onSubmit={handleThrottledSignup} className="space-y-5">
+          {/* Username */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="username" className="text-sm">
-              Username
-            </label>
+            <label htmlFor="username" className="text-sm">Username</label>
             <input
               id="username"
               type="text"
-              className="p-2 rounded-lg outline-none border border-gray-600 bg-transparent"
+              className="p-3 rounded-lg outline-none border border-gray-700 bg-transparent focus:border-green-400 transition-colors"
               placeholder="Choose a username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
 
+          {/* Passcode */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="passcode" className="text-sm">
-              Passcode
-            </label>
+            <label htmlFor="passcode" className="text-sm">Passcode</label>
             <input
               id="passcode"
               type="password"
-              className="p-2 rounded-lg outline-none border border-gray-600 bg-transparent"
+              className="p-3 rounded-lg outline-none border border-gray-700 bg-transparent focus:border-green-400 transition-colors"
               placeholder="Enter a passcode"
               value={passcode}
               onChange={(e) => setPasscode(e.target.value)}
             />
           </div>
 
+          {/* Confirm Passcode */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="confirmPass" className="text-sm">
-              Confirm Passcode
-            </label>
+            <label htmlFor="confirmPass" className="text-sm">Confirm Passcode</label>
             <input
               id="confirmPass"
               type="password"
-              className="p-2 rounded-lg outline-none border border-gray-600 bg-transparent"
+              className="p-3 rounded-lg outline-none border border-gray-700 bg-transparent focus:border-green-400 transition-colors"
               placeholder="Re-enter passcode"
               value={confirmPass}
               onChange={(e) => setConfirmPass(e.target.value)}
             />
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-400 hover:bg-green-500 transition-colors text-white py-2 rounded-xl font-semibold flex justify-center items-center gap-2"
+            className="w-full bg-green-400 hover:bg-green-500 transition-colors text-white py-3 rounded-xl font-semibold flex justify-center items-center gap-2"
           >
             {loading ? (
-              <div className="border-2 border-transparent rounded-full border-x-white animate-spin w-4 h-4" />
+              <div className="border-2 border-transparent rounded-full border-x-white animate-spin w-5 h-5" />
             ) : (
-              "Create Account"
+              "Sign Up"
             )}
           </button>
         </form>
+
+        {/* Already have account */}
+        <p className="text-sm text-center mt-6 text-gray-400">
+          Already have an account?{" "}
+          <span
+            className="text-green-400 cursor-pointer hover:underline"
+            onClick={() => navigate("/login")}
+          >
+            Log in
+          </span>
+        </p>
       </div>
     </div>
   );

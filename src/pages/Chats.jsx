@@ -7,11 +7,11 @@ import { useNavigate } from "react-router-dom";
 import { deleteChat, exitChat, getChats } from "../server/homePage";
 import { TbDoorExit } from "react-icons/tb";
 import { io } from "socket.io-client";
+import { motion } from "framer-motion";
 
 const Chats = () => {
   const my_userId = localStorage.getItem("userId");
   const {
-    state,
     state: {
       chats: { activeChats },
       newChatModel: { isOpen: newChatModelIsOpen },
@@ -22,6 +22,7 @@ const Chats = () => {
 
   const [first, setfirst] = useState(false);
   const [socket, setSocket] = useState(null);
+  const [loading, setLoading] = useState(true); // 🔥 track loading state
   const navigate = useNavigate();
 
   // Scroll lock when modals open
@@ -33,7 +34,7 @@ const Chats = () => {
     }
   }, [newChatModelIsOpen, phraseModelIsOpen, first]);
 
-  // Initialize socket connection every time component mounts
+  // Initialize socket connection
   useEffect(() => {
     const newSocket = io("https://anon-server-9ykk.onrender.com", {
       auth: { userId: my_userId },
@@ -45,12 +46,13 @@ const Chats = () => {
     };
   }, [my_userId]);
 
-  // Fetch chats and listen for new messages
+  // Fetch chats + listen for new messages
   useEffect(() => {
     if (!socket) return;
 
     const fetchChats = async () => {
       try {
+        setLoading(true); // show skeleton
         const data = await getChats();
         dispatch({
           type: "SET_NOTIFICATION",
@@ -64,13 +66,15 @@ const Chats = () => {
         });
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false); // hide skeleton
       }
     };
 
     fetchChats();
 
     const handleNewMessage = () => {
-      fetchChats(); // Refresh chats on new message
+      fetchChats();
     };
 
     socket.on("newMessage", handleNewMessage);
@@ -98,18 +102,33 @@ const Chats = () => {
     }
   };
 
+  // 🔥 Skeleton component
+  const SkeletonCard = () => (
+    <div className="animate-pulse bg-[#1f2a37] p-5 rounded-2xl shadow-2xl border border-[#2b3b4e]">
+      <div className="h-6 w-1/3 bg-gray-700 rounded mb-3"></div>
+      <div className="h-3 w-1/2 bg-gray-700 rounded mb-4"></div>
+      <div className="flex gap-4">
+        <div className="h-4 w-16 bg-gray-700 rounded"></div>
+        <div className="h-4 w-16 bg-gray-700 rounded"></div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="w-full relative px-4 sm:px-6 lg:px-10">
+      {/* Floating Add Button with Framer Motion */}
       {!newChatModelIsOpen && (
-        <div
-          className="absolute top-4 right-4 cursor-pointer z-10"
+        <motion.div
+          className="fixed bottom-6 right-6 z-50 cursor-pointer"
           title="Add new room"
+          initial={{ scale: 0, rotate: -90 }}
+          animate={{ scale: 1, rotate: 0 }}
+          whileHover={{ scale: 1.15, rotate: 90 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          onClick={() => dispatch({ type: "TOGGLE_NEW_CHAT_MODEL" })}
         >
-          <IoAddSharp
-            className="text-4xl bg-gradient-to-tr from-green-400 to-green-600 rounded-full p-2 text-black shadow-lg hover:scale-110 hover:rotate-90 transition-all duration-300"
-            onClick={() => dispatch({ type: "TOGGLE_NEW_CHAT_MODEL" })}
-          />
-        </div>
+          <IoAddSharp className="text-4xl sm:text-5xl bg-gradient-to-tr from-green-400 to-green-600 rounded-full p-3 text-black shadow-lg" />
+        </motion.div>
       )}
 
       <div
@@ -117,7 +136,10 @@ const Chats = () => {
           newChatModelIsOpen ? "pointer-events-none" : ""
         }`}
       >
-        {activeChats.length === 0 ? (
+        {/* 🔥 Show Skeleton while loading */}
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+        ) : activeChats.length === 0 ? (
           <p className="text-gray-400 text-center mt-20 text-sm tracking-wide italic animate-pulse">
             No chats yet. 🚀 Create one and start Anon-ing.
           </p>
@@ -149,7 +171,7 @@ const Chats = () => {
 
                 {/* Exit button */}
                 <div
-                  className="absolute top-16 text-xl sm:text-3xl right-6 text-sky-300 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
+                  className="absolute top-16 right-6 text-xl sm:text-3xl text-sky-300 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
                   title="Exit Room"
                   onClick={(e) =>
                     void (e.stopPropagation(), handleExit(chat.phrase))
@@ -166,8 +188,7 @@ const Chats = () => {
                   {chat.phrase}
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-400">
-                  Created:{" "}
-                  {moment(chat.createdAt).format("MMM Do YYYY, h:mm A")}
+                  Created: {moment(chat.createdAt).format("MMM Do YYYY, h:mm A")}
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-2 sm:gap-0">

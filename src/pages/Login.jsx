@@ -7,7 +7,8 @@ import logo from "../assets/anonLogo.png";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { state, dispatch } = useGlobalContext();
+  const { dispatch } = useGlobalContext();
+
   const [username, setUsername] = useState("");
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState("");
@@ -17,6 +18,7 @@ const Login = () => {
 
   const timeoutRef = useRef(null);
 
+  // Prevents multiple rapid login clicks (throttling)
   const throttlingFn = (callback, delay = 1500) => {
     if (timeoutRef.current) return;
     callback();
@@ -44,12 +46,11 @@ const Login = () => {
       } else {
         setSuccess("Login successful");
       }
-      setError("");
-      console.log(res);
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.id);
       localStorage.setItem("username", res.data.username);
-      
+
       dispatch({ type: "POPULATE_NEW_CHATS", value: res.data.activeChats });
       navigate("/home");
     } catch (err) {
@@ -68,10 +69,13 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col select-none sm:flex-row-reverse justify-center items-center min-h-screen bg-[#131d27] text-white px-4">
-      <div className="aspect-square select-none sm:w-1/3 w-1/2">
-        <img src={logo} alt="LOGO" />
+    <div className="flex flex-col sm:flex-row-reverse justify-center items-center min-h-screen w-full overflow-hidden bg-[#131d27] text-white px-4">
+      {/* Logo */}
+      <div className="aspect-square sm:w-1/3 w-1/2 flex justify-center items-center">
+        <img src={logo} alt="Anon Logo" className="w-full h-auto select-none" />
       </div>
+
+      {/* Login Card */}
       <div className="bg-[#111820] p-8 rounded-2xl w-full max-w-md shadow-2xl">
         <h2 className="text-3xl font-semibold text-center mb-6 text-green-400">
           Login
@@ -83,6 +87,7 @@ const Login = () => {
         )}
 
         <form onSubmit={handleThrottledLogin} className="space-y-5">
+          {/* Username */}
           <div className="flex flex-col gap-2">
             <label htmlFor="username" className="text-sm">
               Username
@@ -90,13 +95,16 @@ const Login = () => {
             <input
               id="username"
               type="text"
-              className="p-2 rounded-lg outline-none border border-gray-600 bg-slate-600"
+              className="p-2 rounded-lg outline-none border border-gray-600 bg-slate-600 focus:border-green-400 transition-colors"
               placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              required
             />
           </div>
 
+          {/* Passcode */}
           <div className="flex flex-col gap-2 relative">
             <label htmlFor="passcode" className="text-sm">
               Passcode
@@ -104,22 +112,24 @@ const Login = () => {
             <input
               id="passcode"
               type={showPassword ? "text" : "password"}
-              className="p-2 rounded-lg outline-none border border-gray-600 bg-slate-600 pr-10"
+              className="p-2 rounded-lg outline-none border border-gray-600 bg-slate-600 pr-10 focus:border-green-400 transition-colors"
               placeholder="Enter your passcode"
               value={passcode}
               onChange={(e) => setPasscode(e.target.value)}
+              autoComplete="current-password"
+              required
             />
             <button
               type="button"
-              className="absolute right-3 top-[38px] text-gray-400 hover:text-white"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-3 top-[38px] text-gray-400 hover:text-white transition-colors"
               onClick={() => setShowPassword(!showPassword)}
             >
-              <span className="text-black">
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
 
+          {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
@@ -133,6 +143,7 @@ const Login = () => {
           </button>
         </form>
 
+        {/* Signup Redirect */}
         <div className="text-sm text-center text-gray-400 mt-6">
           Don’t have an account?{" "}
           <Link

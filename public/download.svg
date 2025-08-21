@@ -1,0 +1,48 @@
+<!-- anon-logo-transparent.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">anon logo</title>
+  <desc id="desc">Speech bubble with a mask and the word "anon" beneath</desc>
+
+  <!-- Theme colors -->
+  <style>
+    :root {
+      --fg: #0E1720;        /* dark navy foreground */
+    }
+    .fg { fill: var(--fg); }
+  </style>
+
+  <!-- Group everything to center nicely -->
+  <g transform="translate(0,10)">
+    <!-- Speech bubble (circle + tail) -->
+    <g class="fg" transform="translate(0,40)">
+      <!-- Bubble circle -->
+      <circle cx="512" cy="360" r="260"></circle>
+      <!-- Tail -->
+      <path d="M 458 575
+               L 410 700
+               C 404 716, 426 724, 438 712
+               L 540 600 Z"></path>
+    </g>
+
+    <!-- Mask inside bubble -->
+    <!-- Light mask body -->
+    <path fill="#FFFFFF" d="M352,360
+             c0,-60 95,-92 160,-92
+             s160,32 160,92
+             c0,45 -56,90 -160,90
+             s-160,-45 -160,-90 z"></path>
+
+    <!-- Eye holes (dark navy) -->
+    <g class="fg">
+      <ellipse cx="448" cy="360" rx="54" ry="36"></ellipse>
+      <ellipse cx="576" cy="360" rx="54" ry="36"></ellipse>
+    </g>
+
+    <!-- Wordmark -->
+    <g class="fg" transform="translate(0,100)">
+      <text x="512" y="780" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="170" font-weight="800" letter-spacing="2">
+        anon
+      </text>
+    </g>
+  </g>
+</svg>

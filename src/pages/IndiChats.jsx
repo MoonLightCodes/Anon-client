@@ -20,7 +20,9 @@ const IndiChats = () => {
     },
   } = useGlobalContext();
 
-  const bottomRef = useRef();
+  const bottomRef = useRef(null);
+  const inputRef = useRef(null);
+
   const [msg, setMsg] = useState("");
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,18 +33,36 @@ const IndiChats = () => {
     [activeChats, phrase]
   );
 
+  /** 🔽 Auto-scroll to bottom function */
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      bottomRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }, 100);
+  };
+
   // Auto-scroll on new messages
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    scrollToBottom();
   }, [chatData?.messages]);
 
-  // Auto-scroll also when viewport resizes (keyboard open/close on mobile)
+  // Auto-scroll also when viewport resizes (mobile keyboard open/close)
   useEffect(() => {
-    const handleResize = () => {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    };
+    const handleResize = () => scrollToBottom();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Focus input scroll fix for mobile
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.addEventListener("focus", scrollToBottom);
+    }
+    return () => {
+      inputRef.current?.removeEventListener("focus", scrollToBottom);
+    };
   }, []);
 
   // Fetch chats
@@ -98,6 +118,7 @@ const IndiChats = () => {
     socket.emit("send_message", messageData);
     setMsg("");
     setImages([]);
+    scrollToBottom();
   };
 
   // Handle File Upload
@@ -122,6 +143,7 @@ const IndiChats = () => {
 
       const uploadedUrls = (await Promise.all(uploadPromises)).filter(Boolean);
       setImages(uploadedUrls);
+      scrollToBottom();
     } catch (error) {
       console.error("Error uploading files:", error);
     } finally {
@@ -131,12 +153,12 @@ const IndiChats = () => {
 
   return (
     <div
-      className={`h-[100dvh] w-full bg-[#121c26] text-white flex flex-col p-3 sm:p-4 relative ${
+      className={`h-[93dvh] w-full bg-[#121c26] text-white flex flex-col  p-3 sm:p-4 relative overflow-hidden ${
         loading ? "pointer-events-none" : "pointer-events-auto"
       }`}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-3 mb-3 flex-shrink-0">
         <FaArrowLeft
           className="cursor-pointer text-xl text-green-400"
           onClick={() => navigate(-1)}
@@ -146,7 +168,7 @@ const IndiChats = () => {
         </h1>
       </div>
 
-      <p className="text-xs sm:text-sm text-gray-400 mb-3 truncate">
+      <p className="text-xs sm:text-sm text-gray-400 mb-3 truncate flex-shrink-0">
         Created at: {moment(chatData?.createdAt).format("MMM Do YYYY, h:mm A")}
       </p>
 
@@ -163,6 +185,7 @@ const IndiChats = () => {
                   : "bg-[#2c3e50] mr-auto rounded-2xl rounded-bl-sm"
               }`}
             >
+              {/* Image(s) */}
               {message.images &&
                 Array.isArray(message.images) &&
                 message.images.map((img, idx) => (
@@ -174,15 +197,6 @@ const IndiChats = () => {
                     onClick={() => window.open(img, "_blank")}
                   />
                 ))}
-
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="shared"
-                  className="mt-2 rounded-lg max-w-full cursor-pointer"
-                  onClick={() => window.open(message.image, "_blank")}
-                />
-              )}
 
               {message.text && (
                 <p className="text-white break-words">{message.text}</p>
@@ -198,7 +212,7 @@ const IndiChats = () => {
       </div>
 
       {/* Input Box */}
-      <div className="mt-3 flex gap-2 items-center">
+      <div className="mt-3 flex gap-2 items-center flex-shrink-0">
         <label className="cursor-pointer bg-[#1f2a37] p-3 rounded-lg border border-[#2b3b4e]">
           <FaPhotoVideo className="text-green-400" />
           <input
@@ -211,6 +225,7 @@ const IndiChats = () => {
         </label>
 
         <input
+          ref={inputRef}
           type="text"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
@@ -225,69 +240,6 @@ const IndiChats = () => {
           Send
         </button>
       </div>
-
-      {/* Preview Modal for multiple images */}
-      {images.length > 0 && !loading && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1f2a37] p-6 rounded-2xl shadow-xl w-[95%] max-w-2xl flex flex-col gap-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-80 overflow-y-auto">
-              {images.map((img, idx) => (
-                <div key={idx} className="relative">
-                  <img
-                    src={img}
-                    alt="preview"
-                    className="h-40 w-full object-cover rounded-lg"
-                  />
-                  <button
-                    onClick={() =>
-                      setImages(images.filter((_, i) => i !== idx))
-                    }
-                    className="absolute top-1 right-1 bg-red-600 text-white px-2 py-1 rounded-full text-xs"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <input
-              type="text"
-              value={msg}
-              onChange={(e) => setMsg(e.target.value)}
-              placeholder="Add a caption..."
-              className="w-full bg-[#121c26] border border-[#2b3b4e] text-white p-3 rounded-lg outline-none text-sm"
-            />
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setImages([]);
-                  setMsg("");
-                }}
-                className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-white text-sm font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSend}
-                className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white text-sm font-medium"
-              >
-                Send
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Loading Modal */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#1f2a37]/90 p-6 rounded-xl flex flex-col items-center gap-3">
-            <div className="w-10 h-10 border-4 border-green-400 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-green-400 font-semibold">Uploading...</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
