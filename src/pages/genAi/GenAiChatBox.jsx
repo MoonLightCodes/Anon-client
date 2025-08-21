@@ -17,17 +17,29 @@ const GenAiChatBox = ({ messages, loading }) => {
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
 
     if (!codeBlockRegex.test(text)) {
-      return <span>{text}</span>;
+      return <span className="whitespace-pre-wrap break-words">{text}</span>;
     }
 
     const parts = [];
     let lastIndex = 0;
     text.replace(codeBlockRegex, (match, lang, code, offset) => {
       if (offset > lastIndex) {
-        parts.push(<span key={lastIndex}>{text.slice(lastIndex, offset)}</span>);
+        parts.push(
+          <span
+            key={lastIndex}
+            className="whitespace-pre-wrap break-words"
+          >
+            {text.slice(lastIndex, offset)}
+          </span>
+        );
       }
       parts.push(
-        <SyntaxHighlighter key={offset} language={lang || "text"} style={oneDark} wrapLines>
+        <SyntaxHighlighter
+          key={offset}
+          language={lang || "text"}
+          style={oneDark}
+          wrapLines
+        >
           {code}
         </SyntaxHighlighter>
       );
@@ -36,7 +48,14 @@ const GenAiChatBox = ({ messages, loading }) => {
     });
 
     if (lastIndex < text.length) {
-      parts.push(<span key={lastIndex}>{text.slice(lastIndex)}</span>);
+      parts.push(
+        <span
+          key={lastIndex}
+          className="whitespace-pre-wrap break-words"
+        >
+          {text.slice(lastIndex)}
+        </span>
+      );
     }
 
     return parts;
@@ -53,7 +72,7 @@ const GenAiChatBox = ({ messages, loading }) => {
         return (
           <div key={i} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-xs sm:max-w-md px-4 py-3 rounded-2xl text-sm sm:text-base shadow-lg ${
+              className={`max-w-xs sm:max-w-md px-4 py-3 rounded-2xl text-sm sm:text-base shadow-lg whitespace-pre-wrap break-words ${
                 isUser
                   ? "bg-gradient-to-br from-indigo-500 to-purple-600 text-white"
                   : "bg-slate-600 text-white"

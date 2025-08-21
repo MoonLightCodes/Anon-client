@@ -32,6 +32,10 @@ const NavBar = React.memo(() => {
     tap: { scale: 0.95 },
   };
 
+  // ✅ Active button styles
+  const activeStyle =
+    "bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-md scale-105";
+
   return (
     <motion.div
       className={`w-[10vw] sm:w-[20vw] select-none flex flex-col items-center gap-3 ${
@@ -59,11 +63,12 @@ const NavBar = React.memo(() => {
 
       {/* Nav Buttons */}
       <div className="flex flex-col gap-2">
+        {/* Home */}
         <motion.button
           title="Home"
-          className={`p-2 ${
-            currPath === "/home" ? "bg-[#0a1017]" : ""
-          } rounded-2xl flex items-center gap-3 cursor-pointer`}
+          className={`p-2 rounded-2xl flex items-center gap-3 cursor-pointer transition-all duration-300 ${
+            currPath === "/home" ? activeStyle : "hover:bg-[#0a1017]"
+          }`}
           variants={buttonVariants}
           initial="initial"
           animate="animate"
@@ -75,11 +80,12 @@ const NavBar = React.memo(() => {
           <span className="sm:block hidden">Home</span>
         </motion.button>
 
+        {/* Chats */}
         <motion.button
           title="Chats"
-          className={`p-2 ${
-            currPath === "/chats" ? "bg-[#0a1017]" : ""
-          } rounded-2xl relative flex items-center gap-3 cursor-pointer`}
+          className={`p-2 rounded-2xl relative flex items-center gap-3 cursor-pointer transition-all duration-300 ${
+            currPath === "/chats" ? activeStyle : "hover:bg-[#0a1017]"
+          }`}
           variants={buttonVariants}
           initial="initial"
           animate="animate"
@@ -99,11 +105,12 @@ const NavBar = React.memo(() => {
           <span className="sm:block hidden">Chats</span>
         </motion.button>
 
+        {/* GenAi */}
         <motion.button
           title="GenAi"
-          className={`p-2 bg-sky-400 ${
-            currPath === "/P-AI" ? "bg-sky-700" : ""
-          } rounded-2xl flex items-center gap-3 cursor-pointer`}
+          className={`p-2 rounded-2xl flex items-center gap-3 cursor-pointer transition-all duration-300 ${
+            currPath === "/P-AI" ? activeStyle : "hover:bg-[#0a1017]"
+          }`}
           variants={buttonVariants}
           initial="initial"
           animate="animate"
@@ -115,11 +122,12 @@ const NavBar = React.memo(() => {
           <span className="sm:block hidden">GenAi</span>
         </motion.button>
 
+        {/* Game */}
         <motion.button
           title="Game"
-          className={`p-2 ${
-            currPath === "/game" ? "bg-[#0a1017]" : ""
-          } rounded-2xl flex items-center gap-3 cursor-pointer`}
+          className={`p-2 rounded-2xl flex items-center gap-3 cursor-pointer transition-all duration-300 ${
+            currPath === "/game" ? activeStyle : "hover:bg-[#0a1017]"
+          }`}
           variants={buttonVariants}
           initial="initial"
           animate="animate"
@@ -131,11 +139,12 @@ const NavBar = React.memo(() => {
           <span className="sm:block hidden">Game</span>
         </motion.button>
 
+        {/* Logout */}
         <motion.button
           title="Logout"
-          className={`p-2 ${
-            currPath === "/login" ? "bg-[#0a1017]" : ""
-          } rounded-2xl flex items-center gap-3 cursor-pointer`}
+          className={`p-2 rounded-2xl flex items-center gap-3 cursor-pointer transition-all duration-300 ${
+            currPath === "/login" ? activeStyle : "hover:bg-[#0a1017]"
+          }`}
           variants={buttonVariants}
           initial="initial"
           animate="animate"

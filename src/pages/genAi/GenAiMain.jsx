@@ -31,7 +31,7 @@ const GenAiMain = () => {
   }, []);
 
   return (
-    <div className="flex flex-col  w-[80%] justify-center h-[90vh] md:h-screen">
+    <div className="flex flex-col w-[80%] justify-center h-[90vh] md:h-screen">
       <GenAiHeading  />
       <GenAiChatBox messages={messages} loading={loading} />
       <GeniAIForm setMessages={setMessages} main={main} />
