@@ -27,7 +27,7 @@ const Home = () => {
       {/* Hero Section */}
       <div className="w-full sm:max-w-3xl text-center mt-16 sm:mt-20 px-4">
         <h1 className="text-5xl  font-extrabold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent select-none">
-          Welcome to Anon Chat 💬
+          Welcome to Anon Chat <span className="text-white">💬</span>
         </h1>
         <p className="mt-4 text-gray-300 sm:text-lg">
           Create secure, anonymous chat rooms instantly. Share meaningful

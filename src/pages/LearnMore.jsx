@@ -1,25 +1,25 @@
 import React from "react";
 import { FaRocket, FaShieldAlt, FaGlobe, FaUsers, FaCogs } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const LearnMore = () => {
+  const navigate = useNavigate();
   return (
     <div className="w-full min-h-screen bg-[#090e13] text-white font-sans">
       {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center text-center py-24 px-4 bg-gradient-to-b from-[#0a1017] to-[#1b2430]">
+      <section className="flex flex-col items-center justify-center text-center py-24 px-4 bg-gradient-to-r from-[#121c26] to-[#1b2430]">
         <h1 className="text-5xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">
-          Explore Anon Chat 🚀
+          Explore Anon Chat <span className="text-white">🚀</span>
         </h1>
         <p className="mt-6 text-gray-300 max-w-2xl text-lg sm:text-xl">
           Build private, secure, and anonymous chat experiences. Connect globally,
           share meaningful conversations, and keep control of your privacy.
         </p>
         <div className="mt-8 flex gap-4 flex-wrap justify-center">
-          <button className="px-6 py-3 bg-green-400 text-black font-semibold rounded-xl hover:scale-105 transition">
+          <button className="px-6 py-3 bg-green-400 text-black font-semibold rounded-xl hover:scale-105 transition" onClick={()=>navigate('/home')}>
             Get Started
           </button>
-          <button className="px-6 py-3 bg-transparent border border-green-400 text-green-400 rounded-xl hover:bg-green-400 hover:text-black transition">
-            Documentation
-          </button>
+          
         </div>
       </section>
 
@@ -50,7 +50,7 @@ const LearnMore = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 px-6 sm:px-16 bg-gradient-to-b from-[#0a1017] to-[#1b2430]">
+      <section className="py-24 px-6 sm:px-16 bg-gradient-to-r from-[#0a1017] to-[#1b2430]">
         <h2 className="text-4xl font-bold text-center mb-12 text-green-400">
           How It Works
         </h2>
@@ -98,7 +98,7 @@ const LearnMore = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 px-6 sm:px-16 bg-gradient-to-b from-[#0a1017] to-[#1b2430]">
+      <section className="py-24 px-6 sm:px-16 bg-gradient-to-r from-[#0a1017] to-[#1b2430]">
         <h2 className="text-4xl font-bold text-center mb-12 text-green-400">
           What People Say
         </h2>
