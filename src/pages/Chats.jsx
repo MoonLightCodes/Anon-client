@@ -22,7 +22,8 @@ const Chats = () => {
 
   const [first, setfirst] = useState(false);
   const [socket, setSocket] = useState(null);
-  const [loading, setLoading] = useState(true); // 🔥 track loading state
+  const [loading, setLoading] = useState(true); // 🔥 track initial chats loading
+  const [actionLoading, setActionLoading] = useState(null); // 🔥 track delete/exit loading per chat
   const navigate = useNavigate();
 
   // Scroll lock when modals open
@@ -46,30 +47,30 @@ const Chats = () => {
     };
   }, [my_userId]);
 
+  const fetchChats = async () => {
+    try {
+      setLoading(true);
+      const data = await getChats();
+      dispatch({
+        type: "SET_NOTIFICATION",
+        value: data.data.data.activeChats.some((chat) =>
+          chat.unreadUsers?.some((u) => u === my_userId)
+        ),
+      });
+      dispatch({
+        type: "POPULATE_NEW_CHATS",
+        value: data.data.data.activeChats,
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch chats + listen for new messages
   useEffect(() => {
     if (!socket) return;
-
-    const fetchChats = async () => {
-      try {
-        setLoading(true); // show skeleton
-        const data = await getChats();
-        dispatch({
-          type: "SET_NOTIFICATION",
-          value: data.data.data.activeChats.some((chat) =>
-            chat.unreadUsers?.some((u) => u === my_userId)
-          ),
-        });
-        dispatch({
-          type: "POPULATE_NEW_CHATS",
-          value: data.data.data.activeChats,
-        });
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false); // hide skeleton
-      }
-    };
 
     fetchChats();
 
@@ -86,19 +87,27 @@ const Chats = () => {
 
   const handleDelete = async (roomPhrase) => {
     try {
+      setActionLoading(roomPhrase + "-delete");
       await deleteChat(roomPhrase);
       setfirst((e) => !e);
+      fetchChats();
     } catch (error) {
-      console.log(error.messages);
+      console.log(error.message);
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleExit = async (roomPhrase) => {
     try {
+      setActionLoading(roomPhrase + "-exit");
       await exitChat(roomPhrase);
       setfirst((e) => !e);
+      fetchChats();
     } catch (error) {
-      console.log(error.messages);
+      console.log(error.message);
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -158,26 +167,35 @@ const Chats = () => {
                 {/* Delete button (only for creator) */}
                 {chat.members?.[0]?._id === my_userId && (
                   <div
-                    className="absolute top-3 right-6 z-20 text-red-400 text-xl sm:text-3xl opacity-80 hover:opacity-100 hover:scale-125 transition-all duration-300 cursor-pointer"
+                    className="absolute top-3 right-6 z-20 text-red-400 text-xl sm:text-3xl opacity-80 hover:opacity-100 transition-all duration-300 cursor-pointer"
                     title="Delete Room"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDelete(chat.phrase);
                     }}
                   >
-                    <FaTrashAlt />
+                    {actionLoading === chat.phrase + "-delete" ? (
+                      <div className="animate-spin h-5 w-5 border-2 border-red-400 border-t-transparent rounded-full"></div>
+                    ) : (
+                      <FaTrashAlt />
+                    )}
                   </div>
                 )}
 
                 {/* Exit button */}
                 <div
-                  className="absolute top-16 right-6 text-xl sm:text-3xl text-sky-300 opacity-80 group-hover:opacity-100 hover:scale-125 transition-all duration-300"
+                  className="absolute top-16 right-6 text-xl sm:text-3xl text-sky-300 opacity-80 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
                   title="Exit Room"
-                  onClick={(e) =>
-                    void (e.stopPropagation(), handleExit(chat.phrase))
-                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleExit(chat.phrase);
+                  }}
                 >
-                  <TbDoorExit />
+                  {actionLoading === chat.phrase + "-exit" ? (
+                    <div className="animate-spin h-5 w-5 border-2 border-sky-300 border-t-transparent rounded-full"></div>
+                  ) : (
+                    <TbDoorExit />
+                  )}
                 </div>
 
                 {chat.unreadUsers?.some((e) => e === my_userId) && (
@@ -188,7 +206,8 @@ const Chats = () => {
                   {chat.phrase}
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-400">
-                  Created: {moment(chat.createdAt).format("MMM Do YYYY, h:mm A")}
+                  Created:{" "}
+                  {moment(chat.createdAt).format("MMM Do YYYY, h:mm A")}
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-2 sm:gap-0">
